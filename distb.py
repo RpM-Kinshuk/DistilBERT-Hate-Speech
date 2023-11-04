@@ -246,12 +246,12 @@ def main():
     with open(file_path) as f:
         for line in f.readlines():
             split = line.strip().split('\t')
-            if(split[1] == 'NAG'):
-                data.append([split[0], -1])
-            elif(split[1] == 'CAG'):
-                data.append([split[0], 0])
+            if(split[2] == 'NAG'):
+                data.append([split[1], -1])
+            elif(split[2] == 'CAG'):
+                data.append([split[1], 0])
             else:
-                data.append([split[0], 1])
+                data.append([split[1], 1])
     
     df = pd.DataFrame(data, columns=['text', 'label'])
     
