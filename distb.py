@@ -36,7 +36,11 @@ from transformers import (
 
 parser = argparse.ArgumentParser()
 
-
+parser.add_argument('--data_path', type=str, default='data/english.csv', help='path for data file')
+parser.add_argument('--seed', type=int, default=42, help='random seed')
+parser.add_argument('--batch_size', type=int, default=32, help='batch size')
+parser.add_argument('--epochs', type=int, default=10, help='number of epochs')
+parser.add_argument('--lr', type=float, default=1e-5, help='learning rate')
 # ADD ARGUMENTS HERE
 
 args = parser.parse_args()
