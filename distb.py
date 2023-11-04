@@ -258,26 +258,9 @@ def main():
     print('Number of data samples:\n{}'.format(len(df)))
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     
+    train_dataloader, val_dataloader = get_train_val(args, df, batch_size=32, val_ratio=0.2, fraction=1)
     
     
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f'Using device: {device}\n')
-    print('Loading dataset...')
-    raw_datasets = load_dataset('csv', data_files={'train': 'train.csv', 'val': 'val.csv'})
-    print('Dataset loaded\n')
-    print('Loading tokenizer...')
-    tokenizer = AutoTokenizer.from_pretrained('distilbert-base-uncased')
-    print('Tokenizer loaded\n')
-    print('Tokenizing datasets...')
-    def tokenize(examples):
-        return tokenizer(examples['text'], padding='max_length', truncation=True)
-    tokenized_datasets = raw_datasets.map(tokenize, batched=True)
-    print('Datasets tokenized\n')
-    print('Loading dataloaders...')
-    train_dataloader = DataLoader(tokenized_datasets['train'], batch_size=16, shuffle=True) # type: ignore
-    val_dataloader = DataLoader(tokenized_datasets['val'], batch_size=16, shuffle=True) # type: ignore
-    print('Dataloaders loaded\n')
-    print('Loading model...')
     model = getModel('distilbert-base-uncased', 1)
     model.to(device) # type: ignore
     print('Model loaded\n')
