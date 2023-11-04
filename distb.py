@@ -206,6 +206,50 @@ def train_loss(model, data_loader, optimizer, device):
         optimizer.zero_grad()
     return total_loss / len(data_loader)
 
+
+def tr_loss(model, train_dataloader, val_dataloader, optimizer, device):
+    '''
+    train loss
+    '''
+    num_steps = args.epochs * len(train_dataloader)
+
+    progress_bar = tqdm(
+        range(num_steps),
+        disable=not args.verbose,
+    )
+    
+    for epoch in range(args.epochs):
+        for step, batch in enumerate(train_dataloader):
+            tr_loss = 0
+            val_loss = 0
+            num_all_points = 0
+            nb_tr_examples, nb_tr_steps = 0, 0
+            nb_val_examples, nb_val_steps = 0, 0
+            model.train()
+            batch = tuple(t.to(device) for t in batch)
+            b_input_ids, b_input_mask, b_labels = batch
+            b_labels = b_labels.to(device)
+            b_input_ids = b_input_ids.to(device)
+            b_input_mask = b_input_mask.to(device)
+            input_size = len(b_labels)
+            optimizer.zero_grad()
+            # Forward pass
+            train_output = model(b_input_ids,
+                                attention_mask = b_input_mask,
+                                    token_type_ids = None,
+                                labels = b_labels)
+            # Backward pass
+            train_output.loss.backward()
+            optimizer.step()
+            # Update tracking variables
+            tr_loss += train_output.loss.item()
+            nb_tr_examples += b_input_ids.size(0)
+            num_all_points += b_input_ids.size(0)
+            nb_tr_steps += 1
+            progress_bar.update(1)
+
+
+
 def val_loss(model, data_loader, device):
     '''
     val loss
