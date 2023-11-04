@@ -246,9 +246,9 @@ def main():
     with open(file_path) as f:
         for line in f.readlines():
             split = line.strip().split('\t')
-            if(split[1] == '-1'):
+            if(split[1] == 'NAG'):
                 data.append([split[0], -1])
-            elif(split[1] == '0'):
+            elif(split[1] == 'CAG'):
                 data.append([split[0], 0])
             else:
                 data.append([split[0], 1])
