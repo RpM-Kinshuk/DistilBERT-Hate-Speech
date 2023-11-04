@@ -1,12 +1,16 @@
 import argparse
 import random
 import numpy as np
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
 import torch
 import torch.backends.cudnn
 
 import torch.nn as nn
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
 from transformers.modeling_outputs import SequenceClassifierOutput
+
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 
 import pandas as pd
 import time
@@ -27,6 +31,7 @@ from transformers import (
 from transformers import (
     DistilBertPreTrainedModel,
     DistilBertModel,
+    DistilBertTokenizer,
 )
 
 parser = argparse.ArgumentParser()
@@ -113,7 +118,57 @@ class DistSpeech(DistilBertPreTrainedModel):
             hidden_states=distilbert_output.hidden_states,
             attentions=distilbert_output.attentions,
             )
+  
+
+def preprocess(input_text, tokenizer):
+    return tokenizer.encode_plus(
+            input_text,
+            add_special_tokens=True,
+            max_length = 32,
+            pad_to_max_length=True,
+            return_attention_mask=True,
+            return_tensors='pt',
+            )
+  
+def get_train_val(args, df, batch_size = 32, val_ratio = 0.2, fraction = 1):
+    labels = df.label.values
+    train_idx, val_idx = train_test_split(
+        np.arange(len(labels)),
+        test_size=val_ratio,
+        shuffle=True,
+        stratify=labels, random_state=args.seed)
+    
+    text = df.text.values
+    labels = df.label.values
+    truncate_dataset = False
+    
+    if truncate_dataset:
+        text = text[0:int(len(text) * fraction)]
+        labels = labels[0:int(len(labels) * fraction)]
         
+    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased', do_lower_case=True)
+    token_id = []
+    attention_masks = []
+    
+    for sample in text:
+        encoding_dict = preprocess(sample, tokenizer)
+        token_id.append(encoding_dict['input_ids'])
+        attention_masks.append(encoding_dict['attention_mask'])
+    
+    token_id = torch.cat(token_id, dim=0)
+    attention_masks = torch.cat(attention_masks, dim=0)
+    labels = torch.tensor(labels)
+    
+    train_set = TensorDataset(token_id[train_idx], attention_masks[train_idx], labels[train_idx])
+    
+    val_set = TensorDataset(token_id[val_idx], attention_masks[val_idx], labels[val_idx])
+    
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
+    
+    return train_loader, val_loader
+    
+           
 def getOptimizer(model, lr, weight_decay):
     '''
     optimizer
@@ -183,6 +238,28 @@ def main():
     '''
     main
     '''
+    
+    file_path = args.data_path
+    
+    data = []
+    
+    with open(file_path) as f:
+        for line in f.readlines():
+            split = line.strip().split('\t')
+            if(split[1] == '-1'):
+                data.append([split[0], -1])
+            elif(split[1] == '0'):
+                data.append([split[0], 0])
+            else:
+                data.append([split[0], 1])
+    
+    df = pd.DataFrame(data, columns=['text', 'label'])
+    
+    print('Number of data samples:\n{}'.format(len(df)))
+    device = ('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    
+    
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using device: {device}\n')
     print('Loading dataset...')
