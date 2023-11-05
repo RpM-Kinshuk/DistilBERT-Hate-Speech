@@ -36,7 +36,7 @@ from transformers import (
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--data_path', type=str, default='dataset/english/agr_en_train.csv', help='path for data file')
+parser.add_argument('--data_path', type=str, default='dataset/english/en_train.csv', help='path for data file')
 parser.add_argument('--seed', type=int, default=42, help='random seed')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size')
 parser.add_argument('--epochs', type=int, default=10, help='number of epochs')
@@ -289,17 +289,9 @@ def main():
     
     data = []
     
-    with open(file_path) as f:
-        for line in f.readlines():
-            split = line.strip().split('\t')
-            if(split[2] == 'NAG'):
-                data.append([split[1], -1])
-            elif(split[2] == 'CAG'):
-                data.append([split[1], 0])
-            else:
-                data.append([split[1], 1])
-    
-    df = pd.DataFrame(data, columns=['text', 'label'])
+    # extract dataframe out of csv
+    df = pd.read_csv(file_path)
+    df = df[['text', 'label']]
     
     print('Number of data samples:\n{}'.format(len(df)))
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
@@ -320,3 +312,6 @@ def main():
     torch.save(model.state_dict(), 'model.pth') # type: ignore
     print('Model saved\n')
     print('Done')
+    
+if __name__ == "__main__":
+    main()
