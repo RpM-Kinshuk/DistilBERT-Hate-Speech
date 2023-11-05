@@ -1,4 +1,5 @@
 import argparse
+from functools import cache
 import random
 import numpy as np
 from sklearn import preprocessing
@@ -32,14 +33,17 @@ from transformers import (
     DistilBertPreTrainedModel,
     DistilBertModel,
     DistilBertTokenizer,
+    DistilBertForSequenceClassification,
 )
+
+os.environ['TRANSFORMERS_CACHE']='/rscratch/tpang/kinshuk/cache'
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
     "--data_path",
     type=str,
-    default="dataset/english/en_train.csv",
+    default="/rscratch/tpang/kinshuk/RpMKin/dataset/english/new.csv",
     help="path for data file",
 )
 parser.add_argument("--seed", type=int, default=42, help="random seed")
@@ -191,8 +195,8 @@ def get_train_val(args, df, batch_size=32, val_ratio=0.2, fraction=1):
         token_id[val_idx], attention_masks[val_idx], labels[val_idx]
     )
 
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, cache_path='/rscratch/tpang/kinshuk/cache')
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, cache_path='/rscratch/tpang/kinshuk/cache')
 
     return train_loader, val_loader
 
@@ -211,7 +215,7 @@ def getModel(model_name, num_labels):
     model
     """
     config = AutoConfig.from_pretrained(model_name, num_labels=num_labels)
-    model = DistilBertModel.from_pretrained(model_name, config=config)
+    model = DistilBertForSequenceClassification.from_pretrained(model_name, config=config)
 
     for param in model.parameters():  # type: ignore
         param.requires_grad = True
@@ -258,40 +262,29 @@ def tr_loss(model, train_dataloader, val_dataloader, optimizer, device):
 
     progress_bar = tqdm(
         range(num_steps),
-        disable=not args.verbose,
+        disable=False
     )
 
     for epoch in range(args.epochs):
-        for step, batch in enumerate(train_dataloader):
-            tr_loss = 0
-            val_loss = 0
-            num_all_points = 0
-            nb_tr_examples, nb_tr_steps = 0, 0
-            nb_val_examples, nb_val_steps = 0, 0
-            model.train()
-            batch = tuple(t.to(device) for t in batch)
-            b_input_ids, b_input_mask, b_labels = batch
-            b_labels = b_labels.to(device)
-            b_input_ids = b_input_ids.to(device)
-            b_input_mask = b_input_mask.to(device)
-            input_size = len(b_labels)
+        model.train()
+        total_loss = 0
+    
+        for batch in train_dataloader:
+            input_ids, attention_mask, labels = batch
+
             optimizer.zero_grad()
-            # Forward pass
-            train_output = model(
-                b_input_ids,
-                attention_mask=b_input_mask,
-                token_type_ids=None,
-                labels=b_labels,
-            )
-            # Backward pass
-            train_output.loss.backward()
+            outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+            logits = outputs.logits
+            loss_fn = nn.CrossEntropyLoss()  # For multi-class classification
+            loss = loss_fn(logits, labels)
+            loss.backward()
             optimizer.step()
-            # Update tracking variables
-            tr_loss += train_output.loss.item()
-            nb_tr_examples += b_input_ids.size(0)
-            num_all_points += b_input_ids.size(0)
-            nb_tr_steps += 1
+
+            total_loss += loss.item()
+
             progress_bar.update(1)
+        average_loss = total_loss / len(train_dataloader)
+        print(f"Epoch {epoch+1}, Average Loss: {average_loss}")
 
 
 def train(model, train_loader, val_loader, optimizer, device, epochs):
@@ -338,9 +331,8 @@ def main():
     )
     print("Training data size: ", len(train_dataloader))
     print("Validation data size: ", len(val_dataloader))
-    return
 
-    model = getModel("distilbert-base-uncased", 1)
+    model = getModel("distilbert-base-uncased", 3)
     model.to(device)  # type: ignore
     print("Model loaded\n")
     print("Getting optimizer...")
