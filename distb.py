@@ -121,7 +121,6 @@ class DistSpeech(DistilBertPreTrainedModel):
             attentions=distilbert_output.attentions,
             )
   
-
 def preprocess(input_text, tokenizer):
     return tokenizer.encode_plus(
             input_text,
@@ -169,8 +168,7 @@ def get_train_val(args, df, batch_size = 32, val_ratio = 0.2, fraction = 1):
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
     
     return train_loader, val_loader
-    
-           
+  
 def getOptimizer(model, lr, weight_decay):
     '''
     optimizer
@@ -184,11 +182,25 @@ def getModel(model_name, num_labels):
     model
     '''
     config = AutoConfig.from_pretrained(model_name, num_labels=num_labels)
-    model = DistSpeech.from_pretrained(model_name, config=config)
+    model = DistilBertModel.from_pretrained(model_name, config=config)
     
     for param in model.parameters(): # type: ignore
         param.requires_grad = True
     return model
+
+def val_loss(model, data_loader, device):
+    '''
+    val loss
+    '''
+    model.eval()
+    total_loss = 0
+    for batch in tqdm(data_loader):
+        batch = {k: v.to(device) for k, v in batch.items()}
+        with torch.no_grad():
+            outputs = model(**batch)
+            loss = outputs[0]
+            total_loss += loss.item()
+    return total_loss / len(data_loader)
 
 def train_loss(model, data_loader, optimizer, device):
     '''
@@ -205,7 +217,6 @@ def train_loss(model, data_loader, optimizer, device):
         optimizer.step()
         optimizer.zero_grad()
     return total_loss / len(data_loader)
-
 
 def tr_loss(model, train_dataloader, val_dataloader, optimizer, device):
     '''
@@ -248,22 +259,6 @@ def tr_loss(model, train_dataloader, val_dataloader, optimizer, device):
             nb_tr_steps += 1
             progress_bar.update(1)
 
-
-
-def val_loss(model, data_loader, device):
-    '''
-    val loss
-    '''
-    model.eval()
-    total_loss = 0
-    for batch in tqdm(data_loader):
-        batch = {k: v.to(device) for k, v in batch.items()}
-        with torch.no_grad():
-            outputs = model(**batch)
-            loss = outputs[0]
-            total_loss += loss.item()
-    return total_loss / len(data_loader)
-
 def train(model, train_loader, val_loader, optimizer, device, epochs):
     '''
     train
@@ -284,11 +279,7 @@ def main():
     '''
     main
     '''
-    
     file_path = args.data_path
-    
-    data = []
-    
     # extract dataframe out of csv
     df = pd.read_csv(file_path)
     df = df[['text', 'label']]
@@ -297,7 +288,6 @@ def main():
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     
     train_dataloader, val_dataloader = get_train_val(args, df, batch_size=32, val_ratio=0.2, fraction=1)
-    
     
     model = getModel('distilbert-base-uncased', 1)
     model.to(device) # type: ignore
