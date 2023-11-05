@@ -195,8 +195,8 @@ def get_train_val(args, df, batch_size=32, val_ratio=0.2, fraction=1):
         token_id[val_idx], attention_masks[val_idx], labels[val_idx]
     )
 
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, cache_path='/rscratch/tpang/kinshuk/cache')
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, cache_path='/rscratch/tpang/kinshuk/cache')
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
 
     return train_loader, val_loader
 
@@ -271,7 +271,9 @@ def tr_loss(model, train_dataloader, val_dataloader, optimizer, device):
     
         for batch in train_dataloader:
             input_ids, attention_mask, labels = batch
-
+            input_ids = input_ids.to(device)
+            attention_mask = attention_mask.to(device)
+            labels = labels.to(device)
             optimizer.zero_grad()
             outputs = model(input_ids=input_ids, attention_mask=attention_mask)
             logits = outputs.logits
