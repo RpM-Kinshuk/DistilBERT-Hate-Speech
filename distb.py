@@ -147,7 +147,7 @@ def preprocess(input_text, tokenizer, max_length=128):
     )
 
 
-def get_train_val(args, df, batch_size=32, val_ratio=0.2, fraction=1):
+def get_train_val(args, df, batch_size=32, val_ratio=0.1, fraction=1):
     labels = df.label.values
     train_idx, val_idx = train_test_split(
         np.arange(len(labels)),
@@ -319,7 +319,7 @@ def main():
     print("Number of data samples:\n{}".format(len(df)))
 
     train_dataloader, val_dataloader = get_train_val(
-        args, df, batch_size=32, val_ratio=0.2, fraction=1
+        args, df, batch_size=32, val_ratio=0.05, fraction=1
     )
 
     df_val = pd.read_csv("/rscratch/tpang/kinshuk/RpMKin/distilbert/dataset/english/data.csv")
