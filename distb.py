@@ -310,7 +310,7 @@ def main():
             raise ValueError("CSV file does not contain required 'text' and 'label' columns.")
     except ValueError as e:
         print(e)
-        print("The available columns in the CSV are: ", df.columns)
+        print("The available columns in the CSV are: ", df.columns) # type: ignore
         return  # Exit the program if the required columns are not found
 
     # If the columns exist, continue with the rest of the code
@@ -348,7 +348,7 @@ def main():
     }
     svpath = 'rscratch/tpang/kinshuk/RpMKin/distilbert/results'
     Path(svpath).mkdir(parents=True, exist_ok=True)
-    np.save(os.path.join(svpath, "baseline.npy"), base)
+    np.save(os.path.join(svpath, "baseline.npy"), base) # type: ignore
 
 if __name__ == "__main__":
     main()
