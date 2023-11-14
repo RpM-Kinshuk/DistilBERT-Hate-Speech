@@ -15,11 +15,13 @@ model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
 
 attack = TextFoolerJin2019.build(model_wrapper)
 
-# Step 4: Run the attack
-#example dataset used
-dataset = HuggingFaceDataset("ag_news", None, "test")
+# Step 4: Load your dataset
+df = pd.read_csv('dataset/data.csv')
+# Assuming your CSV has columns 'text' for the input text and 'label' for the labels
+texts = df['text'].tolist()
+labels = df['label'].tolist()
 
-# Attack the first n samples from the dataset
-for i in range(n):
-    result = attack.attack_dataset(dataset, indices=[i])
+# Step 5: Run the attack
+for text, label in zip(texts, labels):
+    result = attack.attack(text, label)
     print(result)
