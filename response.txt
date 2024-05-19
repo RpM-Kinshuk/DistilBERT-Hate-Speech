@@ -1,0 +1,95 @@
+Kinshuk:
+	Wrote whole code for BERT experiments:
+		Implemented dataset and result collection pipeline
+		Implemented layer/random selection schemes
+		Implemented LoRA fine-tuning scheme
+		Implemented selection scheme for K/Q/V layer sets
+		Implemented GPU profiling for experiments
+		Fixed bugs in experiment code
+		Conducted experiments on all mentioned schemes
+		Detailed analysis and plots for collected data
+		Data available:
+			Random seeds, alpha selection x 2, layer selection x 2
+			Full fine-tune, K/Q/V selection
+			Over Most GLUE Datasets
+
+	Wrote whole code for Llama-2 experiments:
+		Implemented dataset and result collection pipeline
+		Implemented alpha/layer/random selection schemes
+		Implemented LoRA fine-tuning scheme
+		Helped implement DoRA/RS_LoRA fine-tuning schemes
+		Rooted out CRITICAL FLAW in SFT Trainer that hindered progress
+		Implemented alpha based layer-wise LoRA injection (ALoRA)
+		Implemented avg alpha based block-wise LoRA injection (BLoRA)
+		Implemented GPU profiling for experiments
+		Implemented detailed memory profiling and data plots
+		Fixed bugs in experiment code
+		Conducted experiments on all mentioned schemes
+		Detailed analysis and plots for collected data
+		Data available:
+			Alpha selection, Full fine-tune, ALoRA, BLoRA, DoRA
+			Over Alpaca, and some data on OASST1
+
+	Wrote code for Llama-3 experiments:
+		Same work as Llama-2 with bug fixes and minor changes
+		Conducted experiments on all mentioned schemes
+		Data available:
+			Random seeds, alpha selection, layer selection,
+			Full fine-tune
+			Over Alpaca
+
+	Integrated different alpha estimates and random seeds:
+		Experimented with 8 random selection seeds on Llama-3
+		Plotted detailed analysis for random seeds
+		Plotted confidence intervals for random
+		Experimented with alpha selection for 3 seeds on Llama-3
+		Implemented data sampling intervals for cleaner plots
+		Data available (Llama-3):
+			[7, 42, 53, 76, 89, 99, 357, 666, 1337] seeds for random (8, 12)
+			[7, 89] seeds for alpha (8, 12)
+
+Vlad:	
+	Collected data on BERT for verification:
+		Implemented BERT code on alternate machines
+		Alpha/Random/Layer selection schemes
+		Different random seeds
+		Detailed plot analysis for selection schemes
+
+	Implemented alternate experiments on Llama-2:
+		Implemented separate LoRA fine-tuning scheme
+		Profiled memory for different number of LoRA injections
+
+	Implemented experiments on Phi-2:
+		Compared memory peaks for varying number of tf blocks fine-tuned
+		Compared run-time for varying number of tf blocks fine-tuned
+
+	Added Alpha value analysis
+		Detailed layer-wise alpha value plots for BERT/Llama-2/Phi-2
+		3D layer(type/depth)-wise alpha value plots for BERT/Llama-2/Phi-2
+
+Vipul:
+	Improved BERT code repository:
+		Added code modules to improve repository management
+		Created notebooks for experiments
+		Analysed collected data
+
+	Improved Llama-2 code repository:
+		Implemented QLoRA and LoRA on Llama-2
+		Rooted out bugs in experiment code
+		Helped root out critical error with SFT Trainer
+		Optimized hyperparameters for Llama-2
+		Explained model architecture to improve experiments
+		Implemented detailed model architecture analysis
+
+	Advised various improvements to choice of arguments in experiments:
+		Improved hyperparameters
+		Better and more fair comparisons
+		Newer models and schemes to try
+	
+	Added DoRA fine-tuning scheme to existing code
+	Implemented detailed memory profiling for custom LLM training loop
+	Made preliminary draft for paper
+		
+
+		
+		

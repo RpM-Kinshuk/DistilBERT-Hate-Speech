@@ -1,0 +1,75 @@
+I am using Ubuntu.
+If I am given a job’s PID, how can I bring the paused job to the background/foreground and running state?
+I know bg/fg but they require job id not PID.
+
+
+Also, I pause jobs with
+kill -STOP <PID>
+
+and I know that I can resume it with
+kill -CONT <PID>
+
+
+but I do not know how I can use bg and fg commands with this PID.
+Edit: I want to make this clear:
+Scenario: I have a paused job that I know its PID. How can I bring it back and make it work background?
+
+https://stackoverflow.com/questions/60476078/using-bg-and-fg-with-a-given-pid
+
+
+
+cd
+
+rm
+
+ls
+
+pwd
+
+mkdir
+
+rmdir
+
+touch
+
+tail -f filename
+
+nvidia-smi
+
+gpustat
+
+wget https://raw.githubusercontent.com/wookayin/gpustat/master/gpustat.py
+
+python wtvr.py
+
+rm wtvr.py
+
+ps ax | grep keyword
+
+nohup python -u file.py &
+
+kill -9 PID
+
+Curr PID: 491660
+
+pkill -f 'PATTERN'
+
+watch -n 1 "COMMAND"
+watch -n 1 "ps aux | grep -i 'PATTERN'"
+
+tail -f nohup.out
+tail -f nohup.out | grep -i 'PATTERN'
+tail -f nohup.out | grep -i 'PATTERN' | grep -v 'PATTERN'
+
+conda config --set auto_activate_base false
+
+conda create --name selft python
+
+{
+  "key": "shift+enter",
+  "command": "python.execSelectionInTerminal",
+  "when": "editorTextFocus && !findInputFocussed && !jupyter.ownsSelection && !notebookEditorFocused && !replaceInputFocussed && editorLangId == 'python'"
+}
+Python: Run Selection/Line in Python Terminal
+python.execSelectionInTerminal
+exit
