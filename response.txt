@@ -41,12 +41,26 @@ Kinshuk:
 	Integrated different alpha estimates and random seeds:
 		Experimented with 8 random selection seeds on Llama-3
 		Plotted detailed analysis for random seeds
-		Plotted confidence intervals for random
+		Plotted confidence bounds for random
 		Experimented with alpha selection for 3 seeds on Llama-3
 		Implemented data sampling intervals for cleaner plots
 		Data available (Llama-3):
 			[7, 42, 53, 76, 89, 99, 357, 666, 1337] seeds for random (8, 12)
 			[7, 89] seeds for alpha (8, 12)
+	
+	Implemented block selection schemes for Llama models:
+		Implemented wide band experiments
+		Implemented wide band data visualization
+		Implemented block selection for Llama-3 x3
+		Implemented block selection for Llama-2 x3
+		Implemented detailed analysis for block selection
+		Added validation loss logging and plots for experiments
+		Data available:
+			Full fine-tune, block selection, alpha selection, random selection
+			Over Alpaca
+
+	Added validation loss logging and alpha logging over fine-tuning
+	Suggested alpha based layer selection over epoch
 
 Vlad:	
 	Collected data on BERT for verification:
@@ -67,6 +81,8 @@ Vlad:
 		Detailed layer-wise alpha value plots for BERT/Llama-2/Phi-2
 		3D layer(type/depth)-wise alpha value plots for BERT/Llama-2/Phi-2
 
+	Suggested downsampling layers to have fair alpha comparisons
+
 Vipul:
 	Improved BERT code repository:
 		Added code modules to improve repository management
@@ -85,6 +101,8 @@ Vipul:
 		Improved hyperparameters
 		Better and more fair comparisons
 		Newer models and schemes to try
+
+	Suggested LoRA rank increment
 	
 	Added DoRA fine-tuning scheme to existing code
 	Implemented detailed memory profiling for custom LLM training loop

@@ -1,0 +1,30 @@
+alpaca
+
+y_low = 0.95
+y_high = 1.07
+
+
+chip2
+
+y_low = 0.97
+y_high = 1.2
+
+
+hh-rlhf
+
+y_low = 1.42
+y_high = 1.55
+
+
+oasst1
+
+y_low = 1.28
+y_high = 1.45
+
+
+self-instruct
+
+avg (~oasst1)
+y_low = 1.01
+y_high = 1.4
+
