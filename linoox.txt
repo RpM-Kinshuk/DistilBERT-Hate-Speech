@@ -73,3 +73,9 @@ conda create --name selft python
 Python: Run Selection/Line in Python Terminal
 python.execSelectionInTerminal
 exit
+
+https://chatgpt.com/share/96d00cd3-750d-4022-9a17-252b28e3f6f1
+screen -S mysession
+python filename.py
+# Press Ctrl+A, then D to detach the session
+screen -r mysession
