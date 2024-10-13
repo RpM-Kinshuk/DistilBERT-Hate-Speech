@@ -5,7 +5,7 @@ import math
 import pandas as pd
 import numpy as np
 from operator import itemgetter
-from sampling import *
+from sliding import *
 
 
 class Tempbalance(object):
